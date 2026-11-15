@@ -23,6 +23,8 @@
       --brand-accent: #00754a;
       --brand-mint: #22c55e;
       --brand-warm: #d4a373;
+      --brand-btn-blue: #93c5fd;
+      --brand-btn-blue-text: #1e3a8a;
       --danger: #ef4444;
       --danger-bg: rgba(239, 68, 68, 0.12);
 
@@ -31,8 +33,8 @@
       --text-tertiary: #64748b;
 
       --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
       --radius-pill: 9999px;
 
       --transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -169,7 +171,7 @@
     }
 
     /* ========================================================
-       VISTA 1: COMANDERO / POS
+       VISTA 1: COMANDERO / POS (CARDS VERTICALES TIPO APP)
        ======================================================== */
     #view-pos {
       flex-direction: row;
@@ -248,16 +250,16 @@
       font-weight: 700;
     }
 
-    /* GRID DE PRODUCTOS */
+    /* GRID ESTILO FLUTTER / CARD COFFEE (AMPLIO Y PROPORCIONADO) */
     .products-grid-scroll {
       flex: 1;
-      padding: 16px 20px;
+      padding: 20px;
       overflow-y: auto;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
       align-content: flex-start;
-      padding-bottom: 90px; /* Margen para botón flotante en móvil */
+      padding-bottom: 90px;
     }
 
     .minimal-item-card {
@@ -267,102 +269,122 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       cursor: pointer;
       transition: var(--transition-smooth);
       position: relative;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
 
     .minimal-item-card:hover {
       border-color: var(--border-focus);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
       background: var(--bg-surface-elevated);
     }
 
     .minimal-item-card:active {
-      transform: scale(0.97);
+      transform: scale(0.98);
+    }
+
+    /* CONTENEDOR DE IMAGEN PROPORCIÓN 1:1 o 4:3 */
+    .card-img-box {
+      width: 100%;
+      height: 145px;
+      background: #11141a;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .card-img-thumb {
       width: 100%;
-      height: 110px;
+      height: 100%;
       object-fit: cover;
-      background: #111;
-      border-bottom: 1px solid var(--border-subtle);
-      transition: transform 0.3s ease;
+      display: block;
+      transition: transform 0.35s ease;
     }
 
     .minimal-item-card:hover .card-img-thumb {
-      transform: scale(1.03);
-    }
-
-    .card-body-content {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
+      transform: scale(1.05);
     }
 
     .card-cat-badge {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(12, 14, 18, 0.75);
+      backdrop-filter: blur(4px);
       color: var(--brand-mint);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-body-content {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+      gap: 10px;
     }
 
     .card-title {
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.95rem;
+      font-weight: 700;
       color: var(--text-primary);
       line-height: 1.25;
-      margin-top: 3px;
     }
 
     .card-desc {
       font-size: 0.72rem;
       color: var(--text-secondary);
-      line-height: 1.3;
-      margin-top: 4px;
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
+    /* BARRA INFERIOR DE PRECIO Y BOTÓN AGREGAR (ESTILO FLUTTER APP) */
     .card-bottom-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: auto;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .card-price {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #fff;
     }
 
-    .card-plus-btn {
-      width: 26px;
-      height: 26px;
+    .card-btn-add {
+      background: var(--brand-btn-blue);
+      color: var(--brand-btn-blue-text);
+      border: none;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 14px;
       border-radius: var(--radius-pill);
-      background: var(--bg-subtle);
-      color: var(--text-primary);
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 600;
+      gap: 4px;
       transition: var(--transition-smooth);
     }
 
-    .minimal-item-card:hover .card-plus-btn {
-      background: #fff;
-      color: #000;
+    .minimal-item-card:hover .card-btn-add {
+      filter: brightness(1.1);
+      box-shadow: 0 2px 8px rgba(147, 197, 253, 0.35);
     }
 
     /* BOTÓN FLOTANTE MÓVIL PARA VER PEDIDO */
@@ -1157,7 +1179,6 @@
         font-size: 0.75rem;
       }
 
-      /* EN MÓVIL EL TICKET SE CONVIERTE EN DRAWER/OFFCANVAS */
       .order-sidebar {
         position: fixed;
         inset: 0;
@@ -1192,11 +1213,24 @@
       .products-grid-scroll {
         padding: 12px 14px;
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 12px;
       }
 
-      .card-img-thumb {
-        height: 95px;
+      .card-img-box {
+        height: 125px;
+      }
+
+      .card-title {
+        font-size: 0.85rem;
+      }
+
+      .card-price {
+        font-size: 1rem;
+      }
+
+      .card-btn-add {
+        padding: 5px 10px;
+        font-size: 0.7rem;
       }
 
       .expense-grid-layout {
@@ -1208,12 +1242,12 @@
       }
     }
 
-    @media (min-width: 901px) and (max-width: 1200px) {
+    @media (min-width: 901px) and (max-width: 1250px) {
       .order-sidebar {
         width: 320px;
       }
       .products-grid-scroll {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       }
     }
   </style>
@@ -1579,9 +1613,9 @@
     let searchQuery = '';
     let currentTicket = [];
     let orderType = 'Mesa';
-    let activeOrders = JSON.parse(localStorage.getItem('jd_active_orders_v4')) || [];
-    let paidOrders = JSON.parse(localStorage.getItem('jd_paid_orders_v4')) || [];
-    let expensesList = JSON.parse(localStorage.getItem('jd_expenses_v4')) || [];
+    let activeOrders = JSON.parse(localStorage.getItem('jd_active_orders_v5')) || [];
+    let paidOrders = JSON.parse(localStorage.getItem('jd_paid_orders_v5')) || [];
+    let expensesList = JSON.parse(localStorage.getItem('jd_expenses_v5')) || [];
     let targetCheckoutOrderId = null;
     let currentPaymentMethod = 'Efectivo';
 
@@ -1640,7 +1674,7 @@
       renderCatalog();
     }
 
-    // CATÁLOGO
+    // CATÁLOGO CON DISEÑO DE TARJETAS LIMPIAS TIPO FLUTTER
     function renderCatalog() {
       const grid = document.getElementById('products-grid');
       let items = MENU;
@@ -1660,14 +1694,18 @@
 
       grid.innerHTML = items.map(it => `
         <div class="minimal-item-card" onclick="pushToTicket('${it.id}')">
-          <img src="${it.img}" class="card-img-thumb" alt="${it.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
-          <div class="card-body-content">
+          <div class="card-img-box">
+            <img src="${it.img}" class="card-img-thumb" alt="${it.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
             <span class="card-cat-badge">${it.category}</span>
-            <div class="card-title">${it.name}</div>
-            <div class="card-desc">${it.desc}</div>
+          </div>
+          <div class="card-body-content">
+            <div>
+              <div class="card-title">${it.name}</div>
+              <div class="card-desc">${it.desc}</div>
+            </div>
             <div class="card-bottom-row">
               <span class="card-price">$${it.price.toFixed(2)}</span>
-              <span class="card-plus-btn">+</span>
+              <button class="card-btn-add">Agregar</button>
             </div>
           </div>
         </div>
@@ -1769,7 +1807,6 @@
 
       totalEl.textContent = `$${total.toFixed(2)}`;
 
-      // Barra flotante móvil
       mobBtn.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
       mobCount.textContent = totalItemsCount;
       mobTotal.textContent = `$${total.toFixed(2)}`;
@@ -2096,9 +2133,9 @@
     }
 
     function saveData() {
-      localStorage.setItem('jd_active_orders_v4', JSON.stringify(activeOrders));
-      localStorage.setItem('jd_paid_orders_v4', JSON.stringify(paidOrders));
-      localStorage.setItem('jd_expenses_v4', JSON.stringify(expensesList));
+      localStorage.setItem('jd_active_orders_v5', JSON.stringify(activeOrders));
+      localStorage.setItem('jd_paid_orders_v5', JSON.stringify(paidOrders));
+      localStorage.setItem('jd_expenses_v5', JSON.stringify(expensesList));
     }
   </script>
 </body>
