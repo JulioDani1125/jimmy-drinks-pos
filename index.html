@@ -1152,22 +1152,40 @@
        ======================================================== */
     @media (max-width: 900px) {
       header {
-        padding: 8px 12px;
+        padding: 8px 10px;
         gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
-      .brand-text h1 {
-        font-size: 0.95rem;
+      .brand-section {
+        flex-shrink: 0;
+        gap: 6px;
       }
-      .brand-text span {
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+      }
+      .brand-text {
         display: none;
       }
       .nav-switcher {
-        gap: 2px;
+        gap: 3px;
         padding: 2px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        scrollbar-width: none;
+        flex-shrink: 0;
+      }
+      .nav-switcher::-webkit-scrollbar {
+        display: none;
       }
       .nav-btn {
-        padding: 6px 9px;
-        font-size: 0.72rem;
+        padding: 6px 11px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       /* Catálogo y Vistas en Columna con scroll fluido */
