@@ -286,42 +286,18 @@
       transform: scale(0.98);
     }
 
-    /* CONTENEDOR DE IMAGEN PROPORCIÓN 1:1 o 4:3 */
-    .card-img-box {
-      width: 100%;
-      height: 145px;
-      background: #11141a;
-      overflow: hidden;
-      position: relative;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .card-img-thumb {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.35s ease;
-    }
-
-    .minimal-item-card:hover .card-img-thumb {
-      transform: scale(1.05);
-    }
-
+    /* BADGE DE CATEGORÍA */
     .card-cat-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: rgba(12, 14, 18, 0.75);
-      backdrop-filter: blur(4px);
+      display: inline-block;
+      background: rgba(34, 197, 94, 0.12);
       color: var(--brand-mint);
       font-size: 0.65rem;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: var(--radius-pill);
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 6px;
     }
 
     .card-body-content {
@@ -1179,6 +1155,27 @@
         font-size: 0.75rem;
       }
 
+      /* FIX: hacer que el catálogo sea columna y permita scroll */
+      #view-pos {
+        flex-direction: column;
+      }
+      .catalog-area {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        border-right: none;
+      }
+      .products-grid-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 14px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding-bottom: 90px;
+      }
+
       .order-sidebar {
         position: fixed;
         inset: 0;
@@ -1205,19 +1202,10 @@
         padding: 10px 14px;
         flex-direction: column;
         align-items: stretch;
+        flex-shrink: 0;
       }
       .search-box {
         width: 100%;
-      }
-
-      .products-grid-scroll {
-        padding: 12px 14px;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      .card-img-box {
-        height: 125px;
       }
 
       .card-title {
@@ -1694,12 +1682,9 @@
 
       grid.innerHTML = items.map(it => `
         <div class="minimal-item-card" onclick="pushToTicket('${it.id}')">
-          <div class="card-img-box">
-            <img src="${it.img}" class="card-img-thumb" alt="${it.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
-            <span class="card-cat-badge">${it.category}</span>
-          </div>
           <div class="card-body-content">
             <div>
+              <span class="card-cat-badge">${it.category}</span>
               <div class="card-title">${it.name}</div>
               <div class="card-desc">${it.desc}</div>
             </div>
