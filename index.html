@@ -221,6 +221,8 @@
       display: flex;
       gap: 6px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
       scrollbar-width: none;
       padding-right: 10px;
     }
@@ -449,9 +451,19 @@
     }
 
     .order-meta-grid {
-      display: grid;
-      grid-template-columns: 105px 1fr;
+      display: flex;
       gap: 8px;
+      align-items: center;
+    }
+
+    #order-table-select {
+      width: 110px;
+      flex-shrink: 0;
+    }
+
+    #order-client-input {
+      flex: 1;
+      min-width: 0;
     }
 
     .input-clean {
@@ -1140,7 +1152,8 @@
        ======================================================== */
     @media (max-width: 900px) {
       header {
-        padding: 10px 14px;
+        padding: 8px 12px;
+        gap: 8px;
       }
       .brand-text h1 {
         font-size: 0.95rem;
@@ -1148,18 +1161,27 @@
       .brand-text span {
         display: none;
       }
+      .nav-switcher {
+        gap: 2px;
+        padding: 2px;
+      }
       .nav-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
+        padding: 6px 9px;
+        font-size: 0.72rem;
       }
 
-      /* FIX: hacer que el catálogo sea columna y permita scroll */
+      /* Catálogo y Vistas en Columna con scroll fluido */
       #view-pos {
         flex-direction: column;
+        height: 100%;
+        min-height: 0;
       }
       .catalog-area {
         flex: 1;
         min-height: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
         border-right: none;
       }
@@ -1168,10 +1190,11 @@
         min-height: 0;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 12px 14px;
+        touch-action: pan-y;
+        padding: 10px 12px;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        padding-bottom: 90px;
+        gap: 10px;
+        padding-bottom: 95px;
       }
 
       .order-sidebar {
@@ -1179,13 +1202,28 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        z-index: 150;
+        z-index: 200;
         transform: translateY(100%);
         background: var(--bg-app);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+        visibility: hidden;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
       }
 
       .order-sidebar.open-mobile {
         transform: translateY(0);
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      .order-items-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
       }
 
       .mobile-close-cart-btn {
@@ -1197,9 +1235,10 @@
       }
 
       .catalog-top-bar {
-        padding: 10px 14px;
+        padding: 10px 12px;
         flex-direction: column;
         align-items: stretch;
+        gap: 8px;
         flex-shrink: 0;
       }
       .search-box {
@@ -1207,21 +1246,25 @@
       }
 
       .minimal-item-card {
-        padding: 12px;
-        min-height: 120px;
+        padding: 12px 10px;
+        min-height: 125px;
       }
 
       .card-title {
         font-size: 0.85rem;
       }
 
+      .card-desc {
+        font-size: 0.72rem;
+      }
+
       .card-price {
-        font-size: 1rem;
+        font-size: 1.05rem;
       }
 
       .card-btn-add {
-        padding: 5px 10px;
-        font-size: 0.7rem;
+        padding: 6px 12px;
+        font-size: 0.72rem;
       }
 
       .expense-grid-layout {
@@ -1230,6 +1273,27 @@
 
       #view-orders, #view-expenses, #view-cashcut {
         padding: 14px;
+        height: 100%;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .products-grid-scroll {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 8px 10px;
+        padding-bottom: 95px;
+      }
+      .minimal-item-card {
+        padding: 10px 8px;
+        min-height: 120px;
+      }
+      .card-title {
+        font-size: 0.82rem;
       }
     }
 
@@ -1315,6 +1379,7 @@
           <div class="order-type-tabs">
             <button class="order-type-btn active" onclick="setOrderType('Mesa', this)">En Local</button>
             <button class="order-type-btn" onclick="setOrderType('Para Llevar', this)">Para Llevar</button>
+            <button class="order-type-btn" onclick="setOrderType('Envío', this)">🛵 Envío (+$10)</button>
           </div>
 
           <div class="order-meta-grid">
@@ -1658,6 +1723,8 @@
       activeCategory = c;
       buildCategories();
       renderCatalog();
+      const grid = document.getElementById('products-grid');
+      if (grid) grid.scrollTop = 0;
     }
 
     function handleSearch(val) {
@@ -1742,7 +1809,19 @@
       btn.classList.add('active');
 
       const tableSelect = document.getElementById('order-table-select');
-      tableSelect.style.display = type === 'Para Llevar' ? 'none' : 'block';
+      const clientInput = document.getElementById('order-client-input');
+
+      if (type === 'Mesa') {
+        tableSelect.style.display = 'block';
+        clientInput.placeholder = 'Cliente / Nota...';
+      } else if (type === 'Para Llevar') {
+        tableSelect.style.display = 'none';
+        clientInput.placeholder = 'Nombre del cliente...';
+      } else if (type === 'Envío') {
+        tableSelect.style.display = 'none';
+        clientInput.placeholder = 'Dirección / Teléfono / Cliente...';
+      }
+      updateTicketUI();
     }
 
     function updateTicketUI() {
@@ -1766,10 +1845,10 @@
         return;
       }
 
-      let total = 0;
-      list.innerHTML = currentTicket.map((it, idx) => {
+      let subtotal = 0;
+      let itemsHtml = currentTicket.map((it, idx) => {
         const sub = it.price * it.qty;
-        total += sub;
+        subtotal += sub;
         return `
           <div class="ticket-item">
             <div class="ticket-item-top">
@@ -1793,6 +1872,24 @@
         `;
       }).join('');
 
+      const deliveryFee = (orderType === 'Envío') ? 10 : 0;
+      if (deliveryFee > 0) {
+        itemsHtml += `
+          <div class="ticket-item" style="border: 1px solid rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.08);">
+            <div class="ticket-item-top" style="align-items: center;">
+              <div>
+                <div class="ticket-name" style="color: var(--brand-mint); font-weight: 700;">🛵 Costo de Envío</div>
+                <div style="font-size: 0.72rem; color: var(--text-secondary);">Tarifa fija de entrega a domicilio</div>
+              </div>
+              <div class="ticket-price" style="color: var(--brand-mint); font-weight: 700;">+$10.00</div>
+            </div>
+          </div>
+        `;
+      }
+
+      list.innerHTML = itemsHtml;
+      const total = subtotal + deliveryFee;
+
       totalEl.textContent = `$${total.toFixed(2)}`;
 
       mobBtn.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
@@ -1806,14 +1903,30 @@
         return;
       }
 
-      const table = orderType === 'Para Llevar' ? 'Para Llevar' : document.getElementById('order-table-select').value;
-      const client = document.getElementById('order-client-input').value.trim() || 'General';
-      const total = currentTicket.reduce((acc, it) => acc + (it.price * it.qty), 0);
+      let table = 'Mesa';
+      let client = document.getElementById('order-client-input').value.trim();
+      const deliveryFee = (orderType === 'Envío') ? 10 : 0;
+
+      if (orderType === 'Mesa') {
+        table = document.getElementById('order-table-select').value;
+        client = client || 'General';
+      } else if (orderType === 'Para Llevar') {
+        table = 'Para Llevar';
+        client = client || 'Mostrador';
+      } else if (orderType === 'Envío') {
+        table = '🛵 Envío';
+        client = client || 'Domicilio';
+      }
+
+      const subtotal = currentTicket.reduce((acc, it) => acc + (it.price * it.qty), 0);
+      const total = subtotal + deliveryFee;
 
       const orderObj = {
         id: 'JD-' + Date.now().toString().slice(-4),
         table: table,
         client: client,
+        orderType: orderType,
+        deliveryFee: deliveryFee,
         items: [...currentTicket],
         total: total,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -1867,6 +1980,12 @@
                 <span>$${(it.price * it.qty).toFixed(2)}</span>
               </div>
             `).join('')}
+            ${o.deliveryFee ? `
+              <div class="item-line-row" style="color: var(--brand-mint); font-weight: 600;">
+                <span>🛵 Envío a domicilio</span>
+                <span>+$${o.deliveryFee.toFixed(2)}</span>
+              </div>
+            ` : ''}
           </div>
 
           <div class="order-card-foot">
