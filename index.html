@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c0e12" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Jimmy Drinks | POS & Order System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-app: #0c0e12;
+      --bg-surface: #14171f;
+      --bg-surface-elevated: #1d212b;
+      --bg-subtle: #262c38;
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(255, 255, 255, 0.22);
+
+      --brand-accent: #00754a;
+      --brand-mint: #22c55e;
+      --brand-warm: #d4a373;
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-pill: 9999px;
+
+      --transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      letter-spacing: -0.01em;
+    }
+
+    /* TOP BAR RESPONSIVE */
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .brand-text h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-text span {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* SEGMENTED NAVIGATION */
+    .nav-switcher {
+      display: flex;
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      padding: 3px;
+      border-radius: var(--radius-pill);
+      gap: 2px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .counter-pill {
+      background: var(--brand-accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .view-container {
+      flex: 1;
+      display: none;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .view-container.active {
+      display: flex;
+    }
+
+    /* ========================================================
+       VISTA 1: COMANDERO / POS
+       ======================================================== */
+    #view-pos {
+      flex-direction: row;
+      position: relative;
+    }
+
+    .catalog-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .catalog-top-bar {
+      padding: 12px 20px;
+      background: var(--bg-app);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 240px;
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .category-scroll-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-right: 10px;
+    }
+    .category-scroll-bar::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .cat-pill:hover {
+      color: #fff;
+      background: var(--bg-surface);
+    }
+
+    .cat-pill.active {
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* GRID DE PRODUCTOS */
+    .products-grid-scroll {
+      flex: 1;
+      padding: 16px 20px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      align-content: flex-start;
+      padding-bottom: 90px; /* Margen para botón flotante en móvil */
+    }
+
+    .minimal-item-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .minimal-item-card:hover {
+      border-color: var(--border-focus);
+      transform: translateY(-2px);
+      background: var(--bg-surface-elevated);
+    }
+
+    .minimal-item-card:active {
+      transform: scale(0.97);
+    }
+
+    .card-img-thumb {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      background: #111;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: transform 0.3s ease;
+    }
+
+    .minimal-item-card:hover .card-img-thumb {
+      transform: scale(1.03);
+    }
+
+    .card-body-content {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-cat-badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--brand-mint);
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-top: 3px;
+    }
+
+    .card-desc {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .card-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-plus-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .minimal-item-card:hover .card-plus-btn {
+      background: #fff;
+      color: #000;
+    }
+
+    /* BOTÓN FLOTANTE MÓVIL PARA VER PEDIDO */
+    .mobile-cart-floating-btn {
+      display: none;
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: #fff;
+      color: #000;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      border: none;
+      cursor: pointer;
+    }
+
+    .mobile-cart-badge {
+      background: #000;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      margin-left: 6px;
+    }
+
+    /* PANEL LATERAL DE ORDEN / TICKET */
+    .order-sidebar {
+      width: 380px;
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .order-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-close-cart-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .order-type-tabs {
+      display: flex;
+      background: var(--bg-app);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 2px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .order-type-btn {
+      flex: 1;
+      padding: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .order-type-btn.active {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+    }
+
+    .order-meta-grid {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 8px;
+    }
+
+    .input-clean {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 8px 12px;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .input-clean:focus {
+      border-color: var(--border-focus);
+    }
+
+    .order-items-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ticket-empty {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      text-align: center;
+      gap: 8px;
+      padding: 24px;
+    }
+
+    .ticket-item {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ticket-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .ticket-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .ticket-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .ticket-item-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .stepper-btn {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    .stepper-btn:hover {
+      background: var(--bg-subtle);
+    }
+
+    .stepper-val {
+      font-size: 0.8rem;
+      font-weight: 700;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .item-quick-note {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-family: inherit;
+      outline: none;
+      width: 140px;
+      text-align: right;
+    }
+
+    .item-quick-note:focus {
+      color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .order-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .total-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .total-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .checkout-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon-secondary {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-icon-secondary:hover {
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-primary-action {
+      flex: 1;
+      background: #fff;
+      border: none;
+      color: #000;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-primary-action:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+
+    /* ========================================================
+       VISTA 2: MESAS / COMANDAS ACTIVAS
+       ======================================================== */
+    #view-orders {
+      padding: 24px;
+      overflow-y: auto;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .view-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .view-title-row h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .view-title-row span {
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+    }
+
+    .active-orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .minimal-order-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition-smooth);
+    }
+
+    .minimal-order-card:hover {
+      border-color: var(--border-focus);
+    }
+
+    .card-order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
+    }
+
+    .table-tag {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .time-badge {
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    .order-items-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+
+    .item-line-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+    }
+
+    .item-line-row b {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .order-card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .foot-total {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .btn-charge-small {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    /* ========================================================
+       VISTA 3: APARTADO DE GASTOS
+       ======================================================== */
+    #view-expenses {
+      padding: 24px;
+      overflow-y: auto;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .expense-grid-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .expense-form-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quick-expense-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .quick-tag {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .quick-tag:hover {
+      color: #fff;
+      border-color: var(--border-focus);
+    }
+
+    .btn-add-expense {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+      margin-top: 4px;
+    }
+
+    .expenses-list-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .expenses-list-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .expenses-list-header h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .expense-sum-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--danger);
+      background: var(--danger-bg);
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+    }
+
+    /* ========================================================
+       VISTA 4: CORTE DE CAJA CON BALANCE NETO
+       ======================================================== */
+    #view-cashcut {
+      padding: 24px;
+      overflow-y: auto;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .cashcut-header-clean {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-info-clean h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header-info-clean p {
+      font-size: 0.82rem;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .cashcut-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-ghost {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-focus);
+    }
+
+    .metrics-clean-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .metric-clean-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-clean-card.featured {
+      background: linear-gradient(180deg, var(--bg-surface-elevated), var(--bg-surface));
+      border-color: var(--border-focus);
+    }
+
+    .metric-clean-card.featured-net {
+      background: linear-gradient(180deg, #0f2419, var(--bg-surface));
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .metric-clean-card.featured-expense {
+      background: linear-gradient(180deg, #241113, var(--bg-surface));
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .metric-clean-card .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+    }
+
+    .metric-clean-card .val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 4px;
+    }
+
+    .table-container-clean {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .table-container-clean h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .clean-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .clean-table th {
+      text-align: left;
+      padding: 10px 20px;
+      color: var(--text-tertiary);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .clean-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      color: var(--text-secondary);
+    }
+
+    /* MODAL DE COBRO */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-clean-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title-row h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .pay-methods-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .method-btn {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .method-btn.selected {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+      font-weight: 700;
+    }
+
+    .change-calc-minimal {
+      background: var(--bg-app);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .calc-row input {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 6px 10px;
+      width: 110px;
+      text-align: right;
+      outline: none;
+    }
+
+    /* ========================================================
+       OPTIMIZACIÓN RESPONSIVA PC, TABLET Y CELULAR
+       ======================================================== */
+    @media (max-width: 900px) {
+      header {
+        padding: 10px 14px;
+      }
+      .brand-text h1 {
+        font-size: 0.95rem;
+      }
+      .brand-text span {
+        display: none;
+      }
+      .nav-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+      }
+
+      /* EN MÓVIL EL TICKET SE CONVIERTE EN DRAWER/OFFCANVAS */
+      .order-sidebar {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 150;
+        transform: translateY(100%);
+        background: var(--bg-app);
+      }
+
+      .order-sidebar.open-mobile {
+        transform: translateY(0);
+      }
+
+      .mobile-close-cart-btn {
+        display: block;
+      }
+
+      .mobile-cart-floating-btn {
+        display: flex;
+      }
+
+      .catalog-top-bar {
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        width: 100%;
+      }
+
+      .products-grid-scroll {
+        padding: 12px 14px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .card-img-thumb {
+        height: 95px;
+      }
+
+      .expense-grid-layout {
+        grid-template-columns: 1fr;
+      }
+
+      #view-orders, #view-expenses, #view-cashcut {
+        padding: 14px;
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1200px) {
+      .order-sidebar {
+        width: 320px;
+      }
+      .products-grid-scroll {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <header>
+    <div class="brand-section">
+      <div class="brand-mark">JD</div>
+      <div class="brand-text">
+        <h1>JIMMY DRINKS</h1>
+        <span>POS & Order System</span>
+      </div>
+    </div>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="nav-switcher">
+      <button class="nav-btn active" onclick="switchTab('pos', this)">
+        <span>Registrar</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('orders', this)">
+        <span>Mesas</span>
+        <span class="counter-pill" id="counter-orders">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('expenses', this)">
+        <span>Gastos</span>
+        <span class="counter-pill" style="background: var(--danger);" id="counter-expenses">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('cashcut', this)">
+        <span>Corte</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main>
+
+    <!-- ==========================================
+         VISTA 1: COMANDERO / POS
+         ========================================== -->
+    <section id="view-pos" class="view-container active">
+      <div class="catalog-area">
+        <div class="catalog-top-bar">
+          <div class="search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="catalog-search" placeholder="Buscar producto..." oninput="handleSearch(this.value)">
+          </div>
+
+          <div class="category-scroll-bar" id="category-bar">
+            <!-- Píldoras generadas dinámicamente -->
+          </div>
+        </div>
+
+        <div class="products-grid-scroll" id="products-grid">
+          <!-- Tarjetas generadas dinámicamente -->
+        </div>
+
+        <!-- BOTÓN FLOTANTE MÓVIL -->
+        <button class="mobile-cart-floating-btn" id="mobile-cart-btn" onclick="toggleMobileCart(true)">
+          <div style="display: flex; align-items: center;">
+            <span>Ver Comanda</span>
+            <span class="mobile-cart-badge" id="mobile-cart-count">0</span>
+          </div>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem;" id="mobile-cart-total">$0.00</span>
+        </button>
+      </div>
+
+      <!-- TICKET / RESUMEN LATERAL (DRAWER EN MÓVIL) -->
+      <aside class="order-sidebar" id="order-sidebar-el">
+        <div class="order-header">
+          <button class="mobile-close-cart-btn" onclick="toggleMobileCart(false)">✕ Cerrar</button>
+
+          <div class="order-type-tabs">
+            <button class="order-type-btn active" onclick="setOrderType('Mesa', this)">En Local</button>
+            <button class="order-type-btn" onclick="setOrderType('Para Llevar', this)">Para Llevar</button>
+          </div>
+
+          <div class="order-meta-grid">
+            <select class="input-clean" id="order-table-select">
+              <option value="Mesa 1">Mesa 1</option>
+              <option value="Mesa 2">Mesa 2</option>
+              <option value="Mesa 3">Mesa 3</option>
+              <option value="Mesa 4">Mesa 4</option>
+              <option value="Mesa 5">Mesa 5</option>
+              <option value="Barra">Barra</option>
+            </select>
+            <input type="text" class="input-clean" id="order-client-input" placeholder="Cliente / Nota...">
+          </div>
+        </div>
+
+        <div class="order-items-scroll" id="ticket-items-scroll">
+          <div class="ticket-empty">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <p style="font-size: 0.85rem;">Selecciona productos del menú</p>
+          </div>
+        </div>
+
+        <div class="order-footer">
+          <div class="total-row">
+            <span class="total-label">Total</span>
+            <span class="total-number" id="ticket-total-val">$0.00</span>
+          </div>
+          <div class="checkout-actions">
+            <button class="btn-icon-secondary" onclick="resetCurrentTicket()" title="Limpiar orden">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+            <button class="btn-primary-action" onclick="commitOrder()">
+              <span>Confirmar Orden</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ==========================================
+         VISTA 2: MESAS ACTIVAS
+         ========================================== -->
+    <section id="view-orders" class="view-container">
+      <div class="view-title-row">
+        <h2>Mesas y Órdenes en Curso</h2>
+        <span id="active-orders-subtitle">0 cuentas pendientes</span>
+      </div>
+
+      <div class="active-orders-grid" id="active-orders-container">
+        <!-- Render dinámico -->
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 3: GASTOS Y SALIDAS
+         ========================================== -->
+    <section id="view-expenses" class="view-container">
+      <div class="view-title-row">
+        <div>
+          <h2>Control de Gastos y Salidas</h2>
+          <span style="font-size: 0.82rem; color: var(--text-tertiary);">Registra compras de insumos, hielos o pagos del turno</span>
+        </div>
+      </div>
+
+      <div class="expense-grid-layout">
+        <div class="expense-form-card">
+          <h3 style="font-size: 0.95rem; font-weight: 700;">Registrar Salida</h3>
+
+          <div class="form-group">
+            <label>Concepto / Motivo</label>
+            <input type="text" class="input-clean" id="expense-desc-input" placeholder="Ej. Compra de Hielo, Verdura...">
+            <div class="quick-expense-tags">
+              <span class="quick-tag" onclick="setQuickExpense('Bolsa de Hielo')">🧊 Hielo</span>
+              <span class="quick-tag" onclick="setQuickExpense('Verduras / Limones')">🍋 Limones</span>
+              <span class="quick-tag" onclick="setQuickExpense('Desechables')">🥡 Desechables</span>
+              <span class="quick-tag" onclick="setQuickExpense('Refrescos extra')">🥤 Refrescos</span>
+              <span class="quick-tag" onclick="setQuickExpense('Gas')">🔥 Gas</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Monto Pagado ($)</label>
+            <input type="number" class="input-clean" id="expense-amount-input" placeholder="0.00" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700;">
+          </div>
+
+          <div class="form-group">
+            <label>Tomado de:</label>
+            <select class="input-clean" id="expense-source-select">
+              <option value="Efectivo en Caja">💵 Efectivo en Caja</option>
+              <option value="Transferencia">📲 Transferencia / Cuenta</option>
+            </select>
+          </div>
+
+          <button class="btn-add-expense" onclick="addExpense()">
+            <span>− Registrar Gasto</span>
+          </button>
+        </div>
+
+        <div class="expenses-list-card">
+          <div class="expenses-list-header">
+            <h3>Salidas del Turno</h3>
+            <span class="expense-sum-badge" id="expense-total-badge">Total: $0.00</span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Hora</th>
+                  <th>Concepto</th>
+                  <th>Origen</th>
+                  <th style="text-align: right;">Monto</th>
+                  <th style="text-align: center; width: 40px;"></th>
+                </tr>
+              </thead>
+              <tbody id="expenses-tbody">
+                <!-- Render dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 4: CORTE DE CAJA CON BALANCE NETO
+         ========================================== -->
+    <section id="view-cashcut" class="view-container">
+      <div class="cashcut-header-clean">
+        <div class="header-info-clean">
+          <h2>Corte de Turno</h2>
+          <p id="cashcut-date-str">Registro de ventas y gastos en tiempo real</p>
+        </div>
+        <div class="cashcut-btn-group">
+          <button class="btn-ghost" onclick="shareWhatsAppSummary()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>WhatsApp</span>
+          </button>
+          <button class="btn-ghost" style="color: var(--danger); border-color: rgba(239,68,68,0.2);" onclick="closeCashShift()">
+            <span>Cerrar Turno</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics-clean-grid">
+        <div class="metric-clean-card featured">
+          <span class="label">Ventas Brutas</span>
+          <span class="val" id="metric-total">$0.00</span>
+        </div>
+        <div class="metric-clean-card featured-expense">
+          <span class="label">Total Gastos</span>
+          <span class="val" id="metric-expenses" style="color: var(--danger);">$0.00</span>
+        </div>
+        <div class="metric-clean-card featured-net">
+          <span class="label">Neto en Caja (Ventas − Gastos)</span>
+          <span class="val" id="metric-net" style="color: var(--brand-mint);">$0.00</span>
+        </div>
+        <div class="metric-clean-card">
+          <span class="label">💵 Efectivo Bruto</span>
+          <span class="val" id="metric-cash">$0.00</span>
+        </div>
+        <div class="metric-clean-card">
+          <span class="label">💳 Transferencias</span>
+          <span class="val" id="metric-transfer">$0.00</span>
+        </div>
+        <div class="metric-clean-card">
+          <span class="label">Cuentas Cobradas</span>
+          <span class="val" id="metric-orders-count">0</span>
+        </div>
+      </div>
+
+      <div class="table-container-clean">
+        <h3>Historial de Cuentas Cobradas</h3>
+        <div style="overflow-x: auto;">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Mesa / Referencia</th>
+                <th>Artículos</th>
+                <th>Método</th>
+                <th style="text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="sales-history-tbody">
+              <!-- Render dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE COBRO -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-clean-box">
+      <div class="modal-title-row">
+        <h3 id="modal-checkout-heading">Cobrar Cuenta</h3>
+        <button class="btn-close-modal" onclick="closeCheckoutModal()">✕</button>
+      </div>
+
+      <div style="text-align: center; padding: 10px 0;">
+        <span style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">Total a liquidar</span>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; margin-top: 4px;" id="modal-checkout-amount">$0.00</div>
+      </div>
+
+      <div class="pay-methods-toggle">
+        <button class="method-btn selected" id="btn-method-cash" onclick="choosePayment('Efectivo')">Efectivo</button>
+        <button class="method-btn" id="btn-method-trans" onclick="choosePayment('Transferencia')">Transferencia</button>
+      </div>
+
+      <div class="change-calc-minimal" id="cash-change-section">
+        <div class="calc-row">
+          <span style="color: var(--text-secondary);">Recibido ($):</span>
+          <input type="number" id="cash-input-field" placeholder="0" oninput="recalcChange()">
+        </div>
+        <div class="calc-row">
+          <span style="font-weight: 600;">Cambio:</span>
+          <span id="cash-change-result" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.15rem; color: #fff;">$0.00</span>
+        </div>
+      </div>
+
+      <button class="btn-primary-action" style="padding: 14px; margin-top: 6px;" onclick="completeTransaction()">
+        <span>Liquidar y Cerrar Comanda</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // MENÚ OFICIAL CON IMÁGENES
+    const MENU = [
+      { id: 'b1', name: 'Michelada 1L', category: 'Bebidas', price: 90, desc: 'Tarro de 1L con salsas y escarchado', img: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b2', name: 'Michelada 1/2L', category: 'Bebidas', price: 45, desc: 'Medio litro preparada y escarchada', img: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b3', name: 'Pitufo 1/2L', category: 'Bebidas', price: 45, desc: 'Bebida azul preparada refrescante', img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b4', name: 'Mojito 1/2L', category: 'Bebidas', price: 45, desc: 'Hierbabuena fresca, limón y ron', img: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b5', name: 'Margarita 1/2L', category: 'Bebidas', price: 45, desc: 'Limón y tequila escarchada', img: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b6', name: 'Piña Colada 1/2L', category: 'Bebidas', price: 50, desc: 'Crema de coco, piña y toque de ron', img: 'https://images.unsplash.com/photo-1546171753-97d7676e4602?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b7', name: 'Naranjada 1/2L', category: 'Bebidas', price: 40, desc: 'Natural o mineral refrescante', img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b8', name: 'Limonada 1/2L', category: 'Bebidas', price: 40, desc: 'Natural o mineral', img: 'https://images.unsplash.com/photo-1523371067-1ac38df8653a?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b9', name: 'Enchamoyada 1/2L', category: 'Bebidas', price: 45, desc: 'Mango, Tamarindo, Mora o Cereza', img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b10', name: 'Soda Italiana', category: 'Bebidas', price: 45, desc: 'Blue Curacao, Frutos Rojos, Manzana Verde', img: 'https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b11', name: 'Refresco', category: 'Bebidas', price: 25, desc: 'Lata surtida fría', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80' },
+      { id: 'b12', name: 'Agua 600ml', category: 'Bebidas', price: 10, desc: 'Agua purificada embotellada', img: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h1', name: 'Hamburguesa Clásica', category: 'Hamburguesas', price: 55, desc: 'Carne de res, verduras y aderezos', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h2', name: 'Hamburguesa Hawaiana', category: 'Hamburguesas', price: 65, desc: 'Piña asada, jamón y queso derretido', img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h3', name: 'Hamburguesa BBQ', category: 'Hamburguesas', price: 65, desc: 'Bañada en salsa BBQ especial', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h4', name: 'Hamburguesa Pollo', category: 'Hamburguesas', price: 65, desc: 'Pechuga crujiente o asada', img: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h5', name: 'Cheese Burguer', category: 'Hamburguesas', price: 70, desc: 'Bañada en queso derretido especial', img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h6', name: 'Hamburguesa Crujiente', category: 'Hamburguesas', price: 70, desc: 'Toque extra crujiente y aderezo especial', img: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h7', name: 'Boneless Burger', category: 'Hamburguesas', price: 75, desc: 'Con trozos de boneless en tu salsa', img: 'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?auto=format&fit=crop&w=400&q=80' },
+      { id: 'h8', name: 'Doble Carne Burger', category: 'Hamburguesas', price: 75, desc: 'Doble porción de carne y queso fundido', img: 'https://images.unsplash.com/photo-1583032015879-119313cf2d05?auto=format&fit=crop&w=400&q=80' },
+      { id: 'c1', name: 'Charola Alitas', category: 'Combos', price: 200, desc: '10 alitas, papas, nuggets, nachos y aderezos', img: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=400&q=80' },
+      { id: 'c2', name: 'Combo Hamburguesas', category: 'Combos', price: 215, desc: '2 hamburguesas, papas, nachos y 4 alitas', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80' },
+      { id: 'c3', name: 'Jim Burger Combo', category: 'Combos', price: 235, desc: '2 hamburguesas, papas francesas y 2 frappes', img: 'https://images.unsplash.com/photo-1596662951482-0c4ba74a6df6?auto=format&fit=crop&w=400&q=80' },
+      { id: 'c4', name: 'Paquete Antojo', category: 'Combos', price: 120, desc: 'Alitas acompañadas con papas francesas', img: 'https://images.unsplash.com/photo-1527477378408-1bc09c233134?auto=format&fit=crop&w=400&q=80' },
+      { id: 'a1', name: 'Alitas Orden (6)', category: 'Alitas', price: 90, desc: 'BBQ, BBQ Picoso, Mango Habanero, Búfalo', img: 'https://images.unsplash.com/photo-1524182576066-1be96137b05c?auto=format&fit=crop&w=400&q=80' },
+      { id: 'a2', name: 'Orden Boneless', category: 'Alitas', price: 70, desc: 'Pechuga empanizada con salsa a elegir', img: 'https://images.unsplash.com/photo-1569691899455-88464f6d3ab1?auto=format&fit=crop&w=400&q=80' },
+      { id: 'a3', name: 'Aderezo Extra 2oz', category: 'Alitas', price: 10, desc: 'Ranch o Chipotle casero', img: 'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=400&q=80' },
+      { id: 's1', name: 'Papas Francesa', category: 'Snacks', price: 40, desc: 'Crujientes y sazonadas', img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=400&q=80' },
+      { id: 's2', name: 'Papas Gajo', category: 'Snacks', price: 45, desc: 'Gajos dorados bien sazonados', img: 'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=400&q=80' },
+      { id: 's3', name: 'Nuggets de Pollo', category: 'Snacks', price: 45, desc: 'Porción con aderezos', img: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=400&q=80' },
+      { id: 's4', name: 'Nachos con Queso', category: 'Snacks', price: 40, desc: 'Totopos con queso amarillo caliente', img: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=400&q=80' },
+      { id: 's5', name: 'Aros de Cebolla', category: 'Snacks', price: 45, desc: 'Empanizados y crujientes', img: 'https://images.unsplash.com/photo-1639024471287-032f66e51147?auto=format&fit=crop&w=400&q=80' },
+      { id: 's6', name: 'Hot-Dog Clásico', category: 'Snacks', price: 25, desc: 'Tradicional con aderezos', img: 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=400&q=80' },
+      { id: 's7', name: 'Hot-Dog Tocino', category: 'Snacks', price: 30, desc: 'Salchicha envuelta en tocino crujiente', img: 'https://images.unsplash.com/photo-1627054234553-93d3b76a0841?auto=format&fit=crop&w=400&q=80' },
+      { id: 's8', name: 'Hot-Dog Arrachera', category: 'Snacks', price: 35, desc: 'Con tiras de arrachera jugosa', img: 'https://images.unsplash.com/photo-1541214113241-21578d2d9b62?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f1', name: 'Frappe Clásico', category: 'Frappes', price: 45, desc: 'Capuchino, Mocka u Oreo', img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f2', name: 'Frappe Nutella / Pink', category: 'Frappes', price: 50, desc: 'Nutella cremosa o Pink Drink', img: 'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f3', name: 'Frappe Ferrero / Masapán', category: 'Frappes', price: 60, desc: 'Topping gourmet con chocolate', img: 'https://images.unsplash.com/photo-1541658016709-82535e94bc69?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f4', name: 'Frappe Magnum / Pingüino', category: 'Frappes', price: 70, desc: 'Con paleta o pingüino', img: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f5', name: 'Malteadas', category: 'Frappes', price: 35, desc: 'Fresa, Vainilla o Chocolate', img: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f6', name: 'Smoothie Frutal', category: 'Frappes', price: 55, desc: 'Frutos Rojos, Durazno o Fresa', img: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f7', name: 'Café Caliente Sabor', category: 'Frappes', price: 40, desc: 'Vainilla Italiana, Mocka o Capuchino', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f8', name: 'Café Americano', category: 'Frappes', price: 35, desc: 'Caliente recién preparado', img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80' },
+      { id: 'f9', name: 'Té Caliente', category: 'Frappes', price: 35, desc: 'Variedad de sabores', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=400&q=80' },
+      { id: 'p1', name: 'Waffles', category: 'Postres', price: 50, desc: 'Nutella, Chocolate, Fresa o Mapple', img: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=400&q=80' },
+      { id: 'p2', name: 'Cheesecake', category: 'Postres', price: 40, desc: 'Porción individual suave', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=400&q=80' },
+      { id: 'p3', name: 'Brownies Chocolate', category: 'Postres', price: 45, desc: 'Casero calientito', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=400&q=80' },
+      { id: 'p4', name: 'Brownies Red Velvet', category: 'Postres', price: 45, desc: 'Especial Red Velvet', img: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=400&q=80' },
+      { id: 'p5', name: 'Pay de Queso', category: 'Postres', price: 40, desc: 'Rebanada clásica casera', img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=400&q=80' }
+    ];
+
+    // ESTADO
+    let activeCategory = 'Todos';
+    let searchQuery = '';
+    let currentTicket = [];
+    let orderType = 'Mesa';
+    let activeOrders = JSON.parse(localStorage.getItem('jd_active_orders_v4')) || [];
+    let paidOrders = JSON.parse(localStorage.getItem('jd_paid_orders_v4')) || [];
+    let expensesList = JSON.parse(localStorage.getItem('jd_expenses_v4')) || [];
+    let targetCheckoutOrderId = null;
+    let currentPaymentMethod = 'Efectivo';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildCategories();
+      renderCatalog();
+      updateTicketUI();
+      renderActiveOrders();
+      renderExpenses();
+      renderCashCut();
+    });
+
+    // MÓVIL: TOGGLE DRAWER DE COMANDA
+    function toggleMobileCart(open) {
+      const sidebar = document.getElementById('order-sidebar-el');
+      if (open) {
+        sidebar.classList.add('open-mobile');
+      } else {
+        sidebar.classList.remove('open-mobile');
+      }
+    }
+
+    function switchTab(tabKey, btn) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`view-${tabKey}`).classList.add('active');
+      btn.classList.add('active');
+
+      toggleMobileCart(false);
+
+      if (tabKey === 'orders') renderActiveOrders();
+      if (tabKey === 'expenses') renderExpenses();
+      if (tabKey === 'cashcut') renderCashCut();
+    }
+
+    // CATEGORÍAS
+    function buildCategories() {
+      const cats = ['Todos', 'Bebidas', 'Hamburguesas', 'Combos', 'Alitas', 'Snacks', 'Frappes', 'Postres'];
+      const bar = document.getElementById('category-bar');
+      bar.innerHTML = cats.map(c => `
+        <button class="cat-pill ${c === activeCategory ? 'active' : ''}" onclick="selectCat('${c}')">
+          ${c}
+        </button>
+      `).join('');
+    }
+
+    function selectCat(c) {
+      activeCategory = c;
+      buildCategories();
+      renderCatalog();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderCatalog();
+    }
+
+    // CATÁLOGO
+    function renderCatalog() {
+      const grid = document.getElementById('products-grid');
+      let items = MENU;
+
+      if (activeCategory !== 'Todos') {
+        items = items.filter(i => i.category === activeCategory);
+      }
+
+      if (searchQuery) {
+        items = items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.desc.toLowerCase().includes(searchQuery));
+      }
+
+      if (items.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-tertiary); padding: 40px;">No se encontraron productos</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(it => `
+        <div class="minimal-item-card" onclick="pushToTicket('${it.id}')">
+          <img src="${it.img}" class="card-img-thumb" alt="${it.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'">
+          <div class="card-body-content">
+            <span class="card-cat-badge">${it.category}</span>
+            <div class="card-title">${it.name}</div>
+            <div class="card-desc">${it.desc}</div>
+            <div class="card-bottom-row">
+              <span class="card-price">$${it.price.toFixed(2)}</span>
+              <span class="card-plus-btn">+</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // TICKET / CARRITO
+    function pushToTicket(id) {
+      const prod = MENU.find(p => p.id === id);
+      if (!prod) return;
+
+      const idx = currentTicket.findIndex(t => t.id === id);
+      if (idx > -1) {
+        currentTicket[idx].qty += 1;
+      } else {
+        currentTicket.push({
+          id: prod.id,
+          name: prod.name,
+          price: prod.price,
+          qty: 1,
+          note: ''
+        });
+      }
+      updateTicketUI();
+    }
+
+    function alterQty(idx, delta) {
+      currentTicket[idx].qty += delta;
+      if (currentTicket[idx].qty <= 0) {
+        currentTicket.splice(idx, 1);
+      }
+      updateTicketUI();
+    }
+
+    function resetCurrentTicket() {
+      if (currentTicket.length === 0) return;
+      if (confirm('¿Vaciar la comanda actual?')) {
+        currentTicket = [];
+        updateTicketUI();
+      }
+    }
+
+    function setOrderType(type, btn) {
+      orderType = type;
+      document.querySelectorAll('.order-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const tableSelect = document.getElementById('order-table-select');
+      tableSelect.style.display = type === 'Para Llevar' ? 'none' : 'block';
+    }
+
+    function updateTicketUI() {
+      const list = document.getElementById('ticket-items-scroll');
+      const totalEl = document.getElementById('ticket-total-val');
+      const mobBtn = document.getElementById('mobile-cart-btn');
+      const mobCount = document.getElementById('mobile-cart-count');
+      const mobTotal = document.getElementById('mobile-cart-total');
+
+      const totalItemsCount = currentTicket.reduce((acc, it) => acc + it.qty, 0);
+
+      if (currentTicket.length === 0) {
+        list.innerHTML = `
+          <div class="ticket-empty">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <p style="font-size: 0.85rem;">Selecciona productos del menú</p>
+          </div>
+        `;
+        totalEl.textContent = '$0.00';
+        mobBtn.style.display = 'none';
+        return;
+      }
+
+      let total = 0;
+      list.innerHTML = currentTicket.map((it, idx) => {
+        const sub = it.price * it.qty;
+        total += sub;
+        return `
+          <div class="ticket-item">
+            <div class="ticket-item-top">
+              <div>
+                <div class="ticket-name">${it.name}</div>
+                <div style="font-size: 0.72rem; color: var(--text-tertiary);">$${it.price.toFixed(2)} c/u</div>
+              </div>
+              <div class="ticket-price">$${sub.toFixed(2)}</div>
+            </div>
+            <div class="ticket-item-bottom">
+              <div class="stepper">
+                <button class="stepper-btn" onclick="alterQty(${idx}, -1)">−</button>
+                <span class="stepper-val">${it.qty}</span>
+                <button class="stepper-btn" onclick="alterQty(${idx}, 1)">+</button>
+              </div>
+              <input type="text" class="item-quick-note" placeholder="Nota..." 
+                value="${it.note}" 
+                oninput="currentTicket[${idx}].note = this.value">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      totalEl.textContent = `$${total.toFixed(2)}`;
+
+      // Barra flotante móvil
+      mobBtn.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+      mobCount.textContent = totalItemsCount;
+      mobTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    function commitOrder() {
+      if (currentTicket.length === 0) {
+        alert('Agrega al menos un artículo para confirmar.');
+        return;
+      }
+
+      const table = orderType === 'Para Llevar' ? 'Para Llevar' : document.getElementById('order-table-select').value;
+      const client = document.getElementById('order-client-input').value.trim() || 'General';
+      const total = currentTicket.reduce((acc, it) => acc + (it.price * it.qty), 0);
+
+      const orderObj = {
+        id: 'JD-' + Date.now().toString().slice(-4),
+        table: table,
+        client: client,
+        items: [...currentTicket],
+        total: total,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString()
+      };
+
+      activeOrders.unshift(orderObj);
+      saveData();
+
+      currentTicket = [];
+      document.getElementById('order-client-input').value = '';
+      updateTicketUI();
+      renderActiveOrders();
+      toggleMobileCart(false);
+
+      alert(`✅ Comanda registrada: ${table} ($${total.toFixed(2)})`);
+    }
+
+    // MESAS ACTIVAS
+    function renderActiveOrders() {
+      const container = document.getElementById('active-orders-container');
+      const counter = document.getElementById('counter-orders');
+      const subtitle = document.getElementById('active-orders-subtitle');
+
+      counter.textContent = activeOrders.length;
+      subtitle.textContent = `${activeOrders.length} cuenta(s) activa(s)`;
+
+      if (activeOrders.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--text-tertiary);">
+            <p>No hay cuentas abiertas actualmente.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = activeOrders.map(o => `
+        <div class="minimal-order-card">
+          <div class="card-order-header">
+            <div>
+              <div class="table-tag">${o.table}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">${o.client}</div>
+            </div>
+            <span class="time-badge">${o.time}</span>
+          </div>
+
+          <div class="order-items-summary">
+            ${o.items.map(it => `
+              <div class="item-line-row">
+                <span><b>${it.qty}x</b> ${it.name} ${it.note ? `<small style="color: var(--brand-warm)">(${it.note})</small>` : ''}</span>
+                <span>$${(it.price * it.qty).toFixed(2)}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="order-card-foot">
+            <span class="foot-total">$${o.total.toFixed(2)}</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-charge-small" onclick="openCheckout('${o.id}')">Cobrar</button>
+              <button class="btn-charge-small" style="background: transparent; color: var(--danger); border: 1px solid rgba(239,68,68,0.2);" onclick="removeActiveOrder('${o.id}')">✕</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeActiveOrder(id) {
+      if (confirm('¿Eliminar esta orden?')) {
+        activeOrders = activeOrders.filter(o => o.id !== id);
+        saveData();
+        renderActiveOrders();
+      }
+    }
+
+    // GASTOS
+    function setQuickExpense(text) {
+      document.getElementById('expense-desc-input').value = text;
+      document.getElementById('expense-amount-input').focus();
+    }
+
+    function addExpense() {
+      const desc = document.getElementById('expense-desc-input').value.trim();
+      const amount = parseFloat(document.getElementById('expense-amount-input').value) || 0;
+      const source = document.getElementById('expense-source-select').value;
+
+      if (!desc) {
+        alert('Escribe el concepto o motivo del gasto.');
+        return;
+      }
+
+      if (amount <= 0) {
+        alert('Ingresa un monto válido mayor a $0.');
+        return;
+      }
+
+      const expense = {
+        id: 'EXP-' + Date.now().toString().slice(-4),
+        desc: desc,
+        amount: amount,
+        source: source,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString()
+      };
+
+      expensesList.unshift(expense);
+      saveData();
+
+      document.getElementById('expense-desc-input').value = '';
+      document.getElementById('expense-amount-input').value = '';
+
+      renderExpenses();
+      renderCashCut();
+      alert(`✅ Gasto registrado: -$${amount.toFixed(2)}`);
+    }
+
+    function removeExpense(id) {
+      if (confirm('¿Eliminar este registro de gasto?')) {
+        expensesList = expensesList.filter(e => e.id !== id);
+        saveData();
+        renderExpenses();
+        renderCashCut();
+      }
+    }
+
+    function renderExpenses() {
+      const tbody = document.getElementById('expenses-tbody');
+      const badge = document.getElementById('expense-total-badge');
+      const counter = document.getElementById('counter-expenses');
+
+      let totalExpenses = expensesList.reduce((acc, e) => acc + e.amount, 0);
+      badge.textContent = `Total: -$${totalExpenses.toFixed(2)}`;
+      counter.textContent = expensesList.length;
+
+      if (expensesList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-tertiary); padding: 24px;">No hay gastos registrados en este turno.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = expensesList.map(e => `
+        <tr>
+          <td><span style="font-weight: 600; color: #fff;">${e.time}</span></td>
+          <td><b>${e.desc}</b></td>
+          <td><span style="font-size: 0.75rem; color: var(--text-secondary);">${e.source}</span></td>
+          <td style="text-align: right; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--danger);">-$${e.amount.toFixed(2)}</td>
+          <td style="text-align: center;">
+            <button onclick="removeExpense('${e.id}')" style="background: transparent; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 0.8rem;">✕</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // MODAL DE COBRO
+    function openCheckout(id) {
+      const ord = activeOrders.find(o => o.id === id);
+      if (!ord) return;
+
+      targetCheckoutOrderId = id;
+      document.getElementById('modal-checkout-heading').textContent = `Cobrar: ${ord.table}`;
+      document.getElementById('modal-checkout-amount').textContent = `$${ord.total.toFixed(2)}`;
+      document.getElementById('cash-input-field').value = '';
+      document.getElementById('cash-change-result').textContent = '$0.00';
+
+      choosePayment('Efectivo');
+      document.getElementById('checkout-modal').classList.add('active');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkout-modal').classList.remove('active');
+      targetCheckoutOrderId = null;
+    }
+
+    function choosePayment(m) {
+      currentPaymentMethod = m;
+      document.getElementById('btn-method-cash').classList.toggle('selected', m === 'Efectivo');
+      document.getElementById('btn-method-trans').classList.toggle('selected', m === 'Transferencia');
+
+      document.getElementById('cash-change-section').style.display = m === 'Efectivo' ? 'flex' : 'none';
+    }
+
+    function recalcChange() {
+      const ord = activeOrders.find(o => o.id === targetCheckoutOrderId);
+      if (!ord) return;
+
+      const received = parseFloat(document.getElementById('cash-input-field').value) || 0;
+      const change = received - ord.total;
+      const resEl = document.getElementById('cash-change-result');
+
+      if (change >= 0) {
+        resEl.textContent = `$${change.toFixed(2)}`;
+        resEl.style.color = '#fff';
+      } else {
+        resEl.textContent = `Faltan $${Math.abs(change).toFixed(2)}`;
+        resEl.style.color = 'var(--danger)';
+      }
+    }
+
+    function completeTransaction() {
+      const idx = activeOrders.findIndex(o => o.id === targetCheckoutOrderId);
+      if (idx === -1) return;
+
+      const ord = activeOrders[idx];
+      const paidObj = {
+        ...ord,
+        paymentMethod: currentPaymentMethod,
+        paidAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      paidOrders.unshift(paidObj);
+      activeOrders.splice(idx, 1);
+
+      saveData();
+      closeCheckoutModal();
+      renderActiveOrders();
+      renderCashCut();
+
+      alert(`✅ Pago registrado para ${ord.table}`);
+    }
+
+    // CORTE DE CAJA CON BALANCE NETO
+    function renderCashCut() {
+      let grossSales = 0, cash = 0, transfer = 0;
+      let totalExpenses = expensesList.reduce((acc, e) => acc + e.amount, 0);
+
+      paidOrders.forEach(o => {
+        grossSales += o.total;
+        if (o.paymentMethod === 'Efectivo') cash += o.total;
+        if (o.paymentMethod === 'Transferencia') transfer += o.total;
+      });
+
+      let netCash = grossSales - totalExpenses;
+
+      document.getElementById('metric-total').textContent = `$${grossSales.toFixed(2)}`;
+      document.getElementById('metric-expenses').textContent = `-$${totalExpenses.toFixed(2)}`;
+      document.getElementById('metric-net').textContent = `$${netCash.toFixed(2)}`;
+      document.getElementById('metric-cash').textContent = `$${cash.toFixed(2)}`;
+      document.getElementById('metric-transfer').textContent = `$${transfer.toFixed(2)}`;
+      document.getElementById('metric-orders-count').textContent = paidOrders.length;
+      document.getElementById('cashcut-date-str').textContent = `Fecha: ${new Date().toLocaleDateString()} | Registros guardados`;
+
+      const tbody = document.getElementById('sales-history-tbody');
+      if (paidOrders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-tertiary); padding: 24px;">No hay ventas cobradas en el turno actual.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = paidOrders.map(o => `
+        <tr>
+          <td><span style="font-weight: 600; color: #fff;">${o.paidAt || o.time}</span></td>
+          <td><b>${o.table}</b> <span style="font-size: 0.75rem; color: var(--text-tertiary);">(${o.client})</span></td>
+          <td><span style="font-size: 0.8rem;">${o.items.map(it => `${it.qty}x ${it.name}`).join(', ')}</span></td>
+          <td><span style="font-size: 0.78rem; font-weight: 600;">${o.paymentMethod}</span></td>
+          <td style="text-align: right; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #fff;">$${o.total.toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function shareWhatsAppSummary() {
+      if (paidOrders.length === 0 && expensesList.length === 0) {
+        alert('No hay movimientos registrados para enviar.');
+        return;
+      }
+
+      let grossSales = 0, cash = 0, transfer = 0;
+      paidOrders.forEach(o => {
+        grossSales += o.total;
+        if (o.paymentMethod === 'Efectivo') cash += o.total;
+        if (o.paymentMethod === 'Transferencia') transfer += o.total;
+      });
+
+      let totalExpenses = expensesList.reduce((acc, e) => acc + e.amount, 0);
+      let netTotal = grossSales - totalExpenses;
+
+      let msg = `*CORTE DE CAJA — JIMMY DRINKS*%0A`;
+      msg += `📅 Fecha: ${new Date().toLocaleDateString()}%0A%0A`;
+      msg += `💰 *Venta Bruta:* $${grossSales.toFixed(2)}%0A`;
+      msg += `💵 *Efectivo:* $${cash.toFixed(2)}%0A`;
+      msg += `💳 *Transferencias:* $${transfer.toFixed(2)}%0A`;
+      msg += `🔴 *Gastos/Salidas:* -$${totalExpenses.toFixed(2)}%0A`;
+      msg += `----------------------------%0A`;
+      msg += `✅ *TOTAL NETO EN CAJA:* $${netTotal.toFixed(2)}%0A`;
+      msg += `----------------------------%0A%0A`;
+
+      if (expensesList.length > 0) {
+        msg += `*Salidas/Gastos:*%0A`;
+        expensesList.forEach((e, i) => {
+          msg += `• ${e.desc}: -$${e.amount.toFixed(2)} (${e.source})%0A`;
+        });
+        msg += `%0A`;
+      }
+
+      msg += `🧾 *Cuentas cerradas:* ${paidOrders.length}%0A`;
+
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    function closeCashShift() {
+      if (confirm('¿Cerrar turno y reiniciar ventas y gastos a ceros? Asegúrate de haber enviado tu corte antes.')) {
+        paidOrders = [];
+        expensesList = [];
+        saveData();
+        renderExpenses();
+        renderCashCut();
+        alert('Turno cerrado en ceros. Listo para el siguiente servicio.');
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('jd_active_orders_v4', JSON.stringify(activeOrders));
+      localStorage.setItem('jd_paid_orders_v4', JSON.stringify(paidOrders));
+      localStorage.setItem('jd_expenses_v4', JSON.stringify(expensesList));
+    }
+  </script>
+</body>
+</html>
